@@ -33,7 +33,7 @@ jobs:
             docker run --rm -it \
               -e CATTLE_ACCESS_KEY="5D27D7C5C1DD726C369E" \
               -e CATTLE_SECRET_KEY="1ioWQeJgBfAh1aKwKnr8cXQULBbePJbzhs3WG82X" \
-              —e CATTLE_URL="http://139.5.145.241:8080" \
+              -e CATTLE_URL="http://139.5.145.241:8080" \
               etlweather/gaucho upgrade 1s10 \
               --imageUuid 'docker:marupong/examp1e—nodejs—circle:latest' \
               --batch_size 3 --start_first \
