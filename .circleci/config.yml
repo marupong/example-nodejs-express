@@ -16,4 +16,14 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - setup_remote_docker
+      - run: docker login -u $DOCKER_USERNAME -D $DOCKER_PASSWORD
+      - run:
+          name: "Build docker image and push to docker hub"
+          command: |
+            cp Dockerfile.productiun Dockerfile
+            dacker build -t marupong/example-nodejs-circle:latest .
+            docker build -t marupong/example-nodejs-circle:${CIRCLE_SHA1} .
+            dacker push marupong/example-nodejs-circle:latest
+            dacker push marupong/example-nodejs-circle:${CIRCLE_SHA1}
       - run: echo Done
