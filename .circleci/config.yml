@@ -22,7 +22,7 @@ jobs:
       - run:
           name: "Build docker image and push to docker hub"
           command: |
-            cp Dockerfile.productiun Dockerfile
+            cp Dockerfile.production Dockerfile
             docker build -t marupong/example-nodejs-circle:latest .
             docker build -t marupong/example-nodejs-circle:${CIRCLE_SHA1} .
             docker push marupong/example-nodejs-circle:latest
