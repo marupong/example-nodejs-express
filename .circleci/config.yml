@@ -37,5 +37,5 @@ jobs:
               etlweather/gaucho upgrade 1i113 \
               --imageUuid 'docker:marupong/example-nodejs-circle:latest' \
               --batch_size 3 --start_first \
-              --auto_complete --timeout 600
+              --auto_complete --timeout 1000
       - run: echo Done
