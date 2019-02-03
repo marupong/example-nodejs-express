@@ -38,3 +38,21 @@ jobs:
               --batch_size 3 --start_first \
               --auto_complete --timeout 1000
       - run: echo Done
+workflows:
+  version: 2
+  build_test_ship_depoly:
+    job: 
+      - build
+      - test:
+        requires:
+          - build
+      - ship:
+          requires:
+            - build
+            - test
+      - deploy:
+          test: approval
+          requires:
+            - build
+            - test
+            - ship
