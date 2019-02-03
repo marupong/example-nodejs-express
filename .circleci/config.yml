@@ -45,7 +45,7 @@ jobs:
       - run: echo Done
 workflows:
   version: 2
-  test_deplpy_w_workflow:
+  build_deploy:
       jobs:
         - build
         - deploy:
