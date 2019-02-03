@@ -16,43 +16,39 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: npm test
       - setup_remote_docker
       - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - run:
-          name: "Build docker image and push to docker hub"
+          name:  "Build Docker and push" 
           command: |
-            docker build -t marupong/example-nodejs-circle:latest .
-            docker build -t marupong/example-nodejs-circle:${CIRCLE_SHA1} .
-            docker push marupong/example-nodejs-circle:latest
+            cp Dockerfile.production Dockerfile
+            docker build . -t marupong/example-nodejs-circle:lastst
+            docker build . -t marupong/example-nodejs-circle:${CIRCLE_SHA1}
+            docker push marupong/example-nodejs-circle:lastst
             docker push marupong/example-nodejs-circle:${CIRCLE_SHA1}
-      - run:
-          name: "Call to rancher to deploy"
-          command: |
-            docker run --rm -it \
-              -e CATTLE_ACCESS_KEY="5D27D7C5C1DD726C369E" \
-              -e CATTLE_SECRET_KEY="1ioWQeJgBfAh1aKwKnr8cXQULBbePJbzhs3WG82X" \
-              -e CATTLE_URL="http://139.5.145.241:8080" \
-              etlweather/gaucho upgrade 1s14 \
-              --imageUuid 'docker:marupong/example-nodejs-circle:latest' \
-              --batch_size 3 --start_first \
-              --auto_complete --timeout 1000
+  deploy:
+    docker:
+       - image: circleci/node:8.11.1-stretch
+    steps:
+      - setup_remote_docker
+      - run :
+            name : "Deployment at rancher"
+            command : |
+              docker run --rm -it \
+                -e CATTLE_ACCESS_KEY="5D27D7C5C1DD726C369E" \
+                -e CATTLE_SECRET_KEY="1ioWQeJgBfAh1aKwKnr8cXQULBbePJbzhs3WG82X" \
+                -e CATTLE_URL="http://139.5.145.241:8080" \
+                etlweather/gaucho upgrade 1s14 \
+                --imageUuid 'docker:marupong/example-nodejs-circle:lastst' \
+                --batch_size 5 --start_first \
+                --auto_complete --timeout=600
       - run: echo Done
 workflows:
   version: 2
-  build_test_ship_depoly:
-    job: 
-      - build
-      - test:
-        requires:
-          - build
-      - ship:
-          requires:
-            - build
-            - test
-      - deploy:
-          test: approval
-          requires:
-            - build
-            - test
-            - ship
+  test_deplpy_w_workflow:
+      jobs:
+        - build
+        - deploy:
+            # type: approval
+            requires:
+              - build
